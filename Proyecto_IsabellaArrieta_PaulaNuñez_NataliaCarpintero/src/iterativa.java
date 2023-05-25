@@ -57,7 +57,7 @@ public class iterativa extends javax.swing.JFrame {
 
         char ultimoCaracter = cadena.charAt(cadena.length() - 1);
 
-        if (!Character.isDigit(ultimoCaracter)) {
+        if (!(ultimoCaracter >= '0' && ultimoCaracter <= '9')) {
             return false; // Manejar caso de carácter no numérico
         }
 
@@ -84,23 +84,19 @@ public class iterativa extends javax.swing.JFrame {
             aparecer(cadena);
             operaciones.setText("");
         }
-    
+
     }
 
     //validar multiplicar sen, cos, tan despues de e o pi
     public void validar2(String cadena) {
         if (acum.length() == 0) {
             aparecer(cadena);
-            parentesis.setVisible(true);//visualizacion de parentesis para el usuario
             p = true;
         } else if (acum.substring(acum.length() - 1).equals("i") || acum.substring(acum.length() - 1).equals("e")) {
             aparecer("*" + cadena);
-            parentesis.setVisible(true);//visualizacion de parentesis para el usuario
             p = true;
         } else {
             aparecer(cadena);
-            parentesis.setVisible(true);//visualizacion de parentesis para el usuario
-            p = true;
         }
     }
 
@@ -121,7 +117,7 @@ public class iterativa extends javax.swing.JFrame {
         if (acum.length() == 0) {
             operaciones.setText("Opcion no valida");
         } else if (acum.substring(acum.length() - 1).equals("(")) {
-       operaciones.setText("Opcion no valida");
+            operaciones.setText("Opcion no valida");
         } else {
             aparecer(cadena);
             operaciones.setText("");
@@ -137,20 +133,24 @@ public class iterativa extends javax.swing.JFrame {
         return cadena;
     }
 
-    //OPERACIONES (HAY QUE VOLVER ALGUNAS ITERATIVAS SI SE PUEDE)
+    //OPERACIONES 
     //multiplicacion
     public static double multiplicacion(double a, double b) {
-        double resultado = 0.0;
+        /**
+         * double resultado = 0; for (int i = 0; i < b; i++) { resultado += a; }
+         * return resultado; *Asi deberia realizar iterativamente, pero no
+         * calcula exactamente para operaciones como -9*pi
+        *
+         */
         return a * b;
+
     }
 
     // Division
     public double division(double dividendo, double divisor) {
         if (divisor == 0) {
             operaciones.setText("El divisor no puede ser cero");
-
         }
-
         return dividendo / divisor;
     }
 
@@ -170,27 +170,29 @@ public class iterativa extends javax.swing.JFrame {
 
     //resta
     public static double resta(double numero1, double numero2) {
-
         return numero1 - numero2;
     }
 
     //factorial
     public static double factorial(double n) {
         int entero = (int) n;
-        if (entero == 0) {
-            return 1;
-        } else {
-            return entero * factorial(entero - 1);
+        int resultado = 1;
+        for (int i = 2; i <= entero; i++) {
+            resultado *= i;
         }
+        return resultado;
     }
 
     //pi
     public static double Pi(int iteraciones) {
+//        
+
         double pi = 0.0;
         int signo = 1;
+
         for (int i = 0; i < iteraciones; i++) {
-            double termino = 1.0 / (2 * i + 1);
-            pi += signo * termino;
+            double termino = signo * (1.0 / (2 * i + 1));
+            pi += termino;
             signo *= -1;
         }
 
@@ -258,7 +260,7 @@ public class iterativa extends javax.swing.JFrame {
         while (hayCambios == true) {
             hayCambios = false;
             if (expresion.contains("pi")) {//si hay un numero pi se evalua enseguida
-                double valorPi = Pi(10);
+                double valorPi = Pi(10000000);
                 expresion = expresion.replace("pi", String.valueOf(valorPi));
                 hayCambios = true;
                 System.out.println("expresion: " + expresion);
@@ -350,6 +352,16 @@ public class iterativa extends javax.swing.JFrame {
                     hayCambios = true;
                 }
             }
+             // Procesar paréntesis
+        while (expresion.contains("(")) {
+            int indiceInicio = expresion.lastIndexOf("(");
+            int indiceFin = expresion.indexOf(")", indiceInicio);
+
+            String subExpresion = expresion.substring(indiceInicio + 1, indiceFin);
+            double resultadoSubExpresion = evaluarExpresion(subExpresion);
+
+            expresion = expresion.substring(0, indiceInicio) + resultadoSubExpresion + expresion.substring(indiceFin + 1);
+        }
 
         }
 
@@ -378,96 +390,96 @@ public class iterativa extends javax.swing.JFrame {
         return longitudExpresion;
     }
 
-    public double evaluarExpresion(String expresion) {
-
-        // Eliminar los espacios en blanco de la expresión
-        expresion = expresion.replaceAll("\\s", "");
-        // Validar si el primer elemento es "-"
+    public static String convertirAPolacaInversa(String expresion) {
         if (expresion.substring(0, 1).equals("-")) {
             expresion = "0" + expresion;
         }
-
-        // Buscar el operador de mayor precedencia
-        int index = encontrarOperadorPrecedente(expresion);
-
-        // Si no se encuentra ningún operador, la expresión es un número único
-        if (index == -1) {
-            return Double.parseDouble(expresion);
-        }
-
-        // Evaluar las subexpresiones izquierda y derecha de acuerdo al operador encontrado
-        double izquierda = evaluarExpresion(expresion.substring(0, index));
-        double derecha = evaluarExpresion(expresion.substring(index + 1));
-
-        // Realizar la operación correspondiente
-        switch (expresion.charAt(index)) {
-            //suma
-            case '+':
-                return suma(izquierda, derecha);
-            //resta
-            case '-':
-                return resta(izquierda, derecha);
-            //multiplicacion
-            case '*':
-                return multiplicacion(izquierda, derecha);
-            //division
-            case '/':
-                if (derecha == 0) {
-                    error = 1;
-                    operaciones.setText("El divisor no puede ser cero");//VALIDACION
-
-                } else {
-                    error = 0;
-                    operaciones.setText("");
-                    return division(izquierda, derecha);
-                }
-            //modulo
-            case '%':
-                return izquierda % derecha;
-            //potencia
-            case '^':
-                return potencia(izquierda, derecha);
-            //division entera
-            case 'd':
-                if (derecha == 0) {
-                    operaciones.setText("El divisor no puede ser cero");//VALIDACION    
-                    error = 1;
-                } else {
-                    error = 0;
-                    operaciones.setText("");
-                    return divisionentera(izquierda, derecha);
-                }
-
-        }
-
-        // En caso de que ocurra un error
-        throw new IllegalArgumentException("Expresión inválida");
-    }
-
-    //     Función para encontrar el operador de mayor precedencia en una expresión
-    private static int encontrarOperadorPrecedente(String expresion) {
-        int nivelParentesis = 0;
-        int indexOperador = -1;
-        int precedenciaActual = Integer.MAX_VALUE;
+        StringBuilder polacaInversa = new StringBuilder();
+        StringBuilder operandoActual = new StringBuilder();
 
         for (int i = 0; i < expresion.length(); i++) {
-            char caracter = expresion.charAt(i);
+            char c = expresion.charAt(i);
 
-            if (caracter == '(') {
-                nivelParentesis++;
-            } else if (caracter == ')') {
-                nivelParentesis--;
-            } else if (nivelParentesis == 0 && (caracter == '+' || caracter == '-' || caracter == '*' || caracter == '/' || caracter == '%' || caracter == '^' || caracter == 'd')) {
-                int precedencia = obtenerPrecedencia(caracter);
-
-                if (precedencia <= precedenciaActual) {
-                    precedenciaActual = precedencia;
-                    indexOperador = i;
+            if (Character.isDigit(c)) {
+                // Agregar el dígito al operando actual
+                operandoActual.append(c);
+            } else if (esOperador(c)) {
+                // Si es un operador, agregar el operando actual a la notación polaca inversa
+                if (operandoActual.length() > 0) {
+                    polacaInversa.append(operandoActual.toString()).append(" ");
+                    operandoActual.setLength(0); // Reiniciar el operando actual
                 }
+                // Agregar el operador a la notación polaca inversa
+                polacaInversa.append(c).append(" ");
             }
         }
 
-        return indexOperador;
+        if (operandoActual.length() > 0) {
+            // Agregar el último operando al final de la notación polaca inversa
+            polacaInversa.append(operandoActual.toString()).append(" ");
+        }
+
+        return polacaInversa.toString().trim();
+    }
+
+    private static boolean esOperador(char c) {
+        return c == '+' || c == '-' || c == '*' || c == '/' || c == '^' || c == 'd' || c == '%';
+    }
+
+    public double evaluarExpresion(String expresion) {
+        // Split the expression into operands and operators
+
+        String[] partes = expresion.split(" ");
+
+        double resultado = Double.parseDouble(partes[0]);
+
+        // Since each operation involves two operands, we increment by 2
+        for (int i = 1; i < partes.length; i += 2) {
+            String operador = partes[i];
+            double valor = Double.parseDouble(partes[i + 1]);
+
+            // Perform the operation
+            switch (operador) {
+                case "+":
+                    resultado += valor;
+                    break;
+                case "-":
+                    resultado -= valor;
+                    break;
+                case "*":
+                    resultado *= valor;
+                    break;
+                case "/":
+                    if (valor == 0) {
+                        operaciones.setText("El divisor no puede ser cero");//VALIDACION
+                        error = 1;
+                        return 0; // Or any other error value
+                    } else {
+                        error = 0;
+                        operaciones.setText("");
+                        resultado /= valor;
+                    }
+                    break;
+                case "%":
+                    resultado %= valor;
+                    break;
+                case "^":
+                    resultado = potencia(resultado, valor);
+                    break;
+                case "d":
+                    if (valor == 0) {
+                        operaciones.setText("El divisor no puede ser cero");//VALIDACION
+                        error = 1;
+                        return 0; // Or any other error value
+                    } else {
+                        error = 0;
+                        operaciones.setText("");
+                        resultado = divisionentera(resultado, valor);
+                    }
+                    break;
+            }
+        }
+        return resultado;
     }
 
     //   Función para obtener la precedencia de un operador
@@ -505,7 +517,6 @@ public class iterativa extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);//centrar ventana
         acum = "";
         this.setResizable(false);
-        parentesis.setVisible(false);
         error = 0;
     }
 
@@ -546,7 +557,6 @@ public class iterativa extends javax.swing.JFrame {
         jButton30 = new javax.swing.JButton();
         jButton31 = new javax.swing.JButton();
         operaciones = new javax.swing.JLabel();
-        parentesis = new javax.swing.JButton();
         res = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
 
@@ -804,15 +814,6 @@ public class iterativa extends javax.swing.JFrame {
         jPanel1.add(jButton31, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 216, 100, 40));
         jPanel1.add(operaciones, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 30, 540, 60));
 
-        parentesis.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/parentesis.png"))); // NOI18N
-        parentesis.setContentAreaFilled(false);
-        parentesis.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                parentesisActionPerformed(evt);
-            }
-        });
-        jPanel1.add(parentesis, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 130, 40, 50));
-
         res.setFont(new java.awt.Font("Segoe UI", 0, 32)); // NOI18N
         res.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
         jPanel1.add(res, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 120, 670, 50));
@@ -973,10 +974,9 @@ public class iterativa extends javax.swing.JFrame {
         //PARA DAR RESULTADO
         if (p == true) {//validacion de parentesis
             aparecer(")");
-            parentesis.setVisible(false);
         }
         String comprobacion = comprobar(acum);
-        double resultado = evaluarExpresion(comprobacion);
+        double resultado = evaluarExpresion(convertirAPolacaInversa(comprobacion));
         if (error == 1) {//validacion de division entre 0
             res.setText(acum);
         } else {
@@ -1007,9 +1007,9 @@ public class iterativa extends javax.swing.JFrame {
 
     private void jButton29ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton29ActionPerformed
         if (caracternumerico(acum) == true) {
-            validar("*e^");
+            validar("*e");
         } else {
-            validar("e^");
+            validar("e");
         }
     }//GEN-LAST:event_jButton29ActionPerformed
 
@@ -1029,22 +1029,16 @@ public class iterativa extends javax.swing.JFrame {
         validar2("tan(");
     }//GEN-LAST:event_jButton5ActionPerformed
 
-    private void parentesisActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_parentesisActionPerformed
-        aparecer(")");
-        parentesis.setVisible(false);//visualizacion de parentesis para el usuario
-        p = false;
-    }//GEN-LAST:event_parentesisActionPerformed
-
     private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
 
     }//GEN-LAST:event_formMouseClicked
 
     private void jButton30ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton30ActionPerformed
-        
+        aparecer("(");
     }//GEN-LAST:event_jButton30ActionPerformed
 
     private void jButton31ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton31ActionPerformed
-        
+        aparecer(")");
     }//GEN-LAST:event_jButton31ActionPerformed
 
     float opa = 255, tam = 0;
@@ -1145,7 +1139,6 @@ public class iterativa extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel operaciones;
-    private javax.swing.JButton parentesis;
     private javax.swing.JLabel res;
     // End of variables declaration//GEN-END:variables
 }
