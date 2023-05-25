@@ -103,7 +103,7 @@ public class iterativa extends javax.swing.JFrame {
     //validar que se sobreescriba un operador sobre otro
     public void validar3(String cadena) {
         if (acum.length() != 0 && acum.substring(acum.length() - 1) != "i") {
-            if (acum.substring(acum.length() - 1).equals("i") || acum.substring(acum.length() - 1).equals("e")) {
+            if (acum.substring(acum.length() - 1).equals("i") || acum.substring(acum.length() - 1).equals("e")|| acum.substring(acum.length() - 1).equals("c")) {
 
             } else {
                 if (validacion2(acum) == false) {
@@ -145,6 +145,23 @@ public class iterativa extends javax.swing.JFrame {
         return a * b;
 
     }
+    //combinatoria
+    public  double Combinacion(double n, double k) {
+    if (k > n) {
+        operaciones.setText("n debe ser mayor");
+        return 0; // No se puede calcular la combinación si k es mayor que n
+    }
+    operaciones.setText("");
+    double numerador = 1;
+    double denominador = 1;
+    
+    for (int i = 1; i <= k; i++) {
+        numerador *= n - i + 1;
+        denominador *= i;
+    }
+    
+    return numerador / denominador;
+}
 
     // Division
     public double division(double dividendo, double divisor) {
@@ -423,7 +440,7 @@ public class iterativa extends javax.swing.JFrame {
     }
 
     private static boolean esOperador(char c) {
-        return c == '+' || c == '-' || c == '*' || c == '/' || c == '^' || c == 'd' || c == '%';
+        return c == '+' || c == '-' || c == '*' || c == '/' || c == '^' || c == 'd' || c == '%'|| c == 'c';
     }
 
     public double evaluarExpresion(String expresion) {
@@ -465,6 +482,9 @@ public class iterativa extends javax.swing.JFrame {
                     break;
                 case "^":
                     resultado = potencia(resultado, valor);
+                    break;
+                    case "c":
+                    resultado = Combinacion(resultado, valor);
                     break;
                 case "d":
                     if (valor == 0) {
@@ -579,6 +599,11 @@ public class iterativa extends javax.swing.JFrame {
         jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 70, 20));
 
         jButton2.setContentAreaFilled(false);
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
         jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 210, 100, 50));
 
         jButton3.setContentAreaFilled(false);
@@ -972,9 +997,7 @@ public class iterativa extends javax.swing.JFrame {
 
     private void jButton24ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton24ActionPerformed
         //PARA DAR RESULTADO
-        if (p == true) {//validacion de parentesis
-            aparecer(")");
-        }
+       
         String comprobacion = comprobar(acum);
         double resultado = evaluarExpresion(convertirAPolacaInversa(comprobacion));
         if (error == 1) {//validacion de division entre 0
@@ -1040,6 +1063,10 @@ public class iterativa extends javax.swing.JFrame {
     private void jButton31ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton31ActionPerformed
         aparecer(")");
     }//GEN-LAST:event_jButton31ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        validar3("c");
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     float opa = 255, tam = 0;
     boolean dib = false;

@@ -9,7 +9,6 @@ import javax.swing.SwingConstants;
 
 public class recursiva2 extends javax.swing.JFrame {
 
-    
     //Variables Globales
     //Entrada usuario
     String acum;
@@ -20,7 +19,7 @@ public class recursiva2 extends javax.swing.JFrame {
 
     //Subrutina para que aparezca el numero en el label de resultado
     public void aparecer(String caracter) {
-        
+
         res.setHorizontalAlignment(SwingConstants.RIGHT);
         acum = acum + caracter;
         res.setText(acum);
@@ -29,29 +28,30 @@ public class recursiva2 extends javax.swing.JFrame {
     //VALIDACIONES
     //validar si ultimo caracter es un digito o no
     public boolean caracternumerico(String cadena) {
-    return validarCaracterNumerico(cadena, 0);
-}
+        return validarCaracterNumerico(cadena, 0);
+    }
+
     private boolean validarCaracterNumerico(String cadena, int index) {
-    if (cadena.length() == 0 || index >= 10) {
-        return false;
-    } else {
-        String i2 = Integer.toString(index);
-        if (cadena.substring(cadena.length() - 1).equals(i2)) {
-            return true;
+        if (cadena.length() == 0 || index >= 10) {
+            return false;
         } else {
-            return validarCaracterNumerico(cadena, index + 1);
+            String i2 = Integer.toString(index);
+            if (cadena.substring(cadena.length() - 1).equals(i2)) {
+                return true;
+            } else {
+                return validarCaracterNumerico(cadena, index + 1);
+            }
         }
     }
-}
 
     //validar si hay parentesis
-   public boolean validacion2(String cadena) {
-    String ultimoCaracter = cadena.substring(cadena.length() - 1);
-    if (ultimoCaracter.equals("(") || ultimoCaracter.equals(")")) {
-        return true;
+    public boolean validacion2(String cadena) {
+        String ultimoCaracter = cadena.substring(cadena.length() - 1);
+        if (ultimoCaracter.equals("(") || ultimoCaracter.equals(")")) {
+            return true;
+        }
+        return false;
     }
-    return false;
-}
 
     //Funcion para validar que se borre el operador si el usuario desea otro
     public boolean validacion(String cadena) {
@@ -82,7 +82,7 @@ public class recursiva2 extends javax.swing.JFrame {
             aparecer(cadena);
             operaciones.setText("");
         } else if (acum.substring(acum.length() - 1).equals("i") || acum.substring(acum.length() - 1).equals("e")) {
-            aparecer("*"+cadena);
+            aparecer("*" + cadena);
             operaciones.setText("");
         } else {
             aparecer(cadena);
@@ -97,7 +97,7 @@ public class recursiva2 extends javax.swing.JFrame {
             parentesis.setVisible(true);//visualizacion de parentesis para el usuario
             p = true;
         } else if (acum.substring(acum.length() - 1).equals("i") || acum.substring(acum.length() - 1).equals("e")) {
-            aparecer("*"+cadena);
+            aparecer("*" + cadena);
             parentesis.setVisible(true);//visualizacion de parentesis para el usuario
             p = true;
         } else {
@@ -110,7 +110,7 @@ public class recursiva2 extends javax.swing.JFrame {
     //validar que se sobreescriba un operador sobre otro
     public void validar3(String cadena) {
         if (acum.length() != 0 && acum.substring(acum.length() - 1) != "i") {
-            if (acum.substring(acum.length() - 1).equals("i")||acum.substring(acum.length() - 1).equals("e")) {
+            if (acum.substring(acum.length() - 1).equals("i") || acum.substring(acum.length() - 1).equals("e") || acum.substring(acum.length() - 1).equals("c")) {
 
             } else {
                 if (validacion2(acum) == false) {
@@ -140,12 +140,26 @@ public class recursiva2 extends javax.swing.JFrame {
         return cadena;
     }
 
-    //OPERACIONES (HAY QUE VOLVER ALGUNAS ITERATIVAS SI SE PUEDE)
+    //OPERACIONES 
     //multiplicacion
     public static double multiplicacion(double a, double b) {
         double resultado = 0.0;
 
         return a * b;
+    }
+
+    //Combinacion
+    public  double Combinacion(double n, double k) {
+        if (k > n) {
+            operaciones.setText("n debe ser mayor");
+            return 0; // No se puede calcular la combinación si k es mayor que n
+        } else if (k == 0 || k == n) {
+            operaciones.setText("");
+            return 1; // Caso base: C(n, 0) = C(n, n) = 1
+        } else {
+            operaciones.setText("");
+            return Combinacion(n - 1, k - 1) + Combinacion(n - 1, k);
+        }
     }
 
     // Division
@@ -240,6 +254,7 @@ public class recursiva2 extends javax.swing.JFrame {
 
         return seno;
     }
+
     //coseno
     public static double coseno(double x) {
         double coseno = 0;
@@ -266,7 +281,7 @@ public class recursiva2 extends javax.swing.JFrame {
                 hayCambios = true;
                 System.out.println("expresion: " + expresion);
             }
-            
+
             if (expresion.contains("e") && !expresion.contains("sen")) {
                 int indiceEuler = expresion.indexOf("e");
                 int indiceSen = expresion.indexOf("sen");
@@ -297,7 +312,6 @@ public class recursiva2 extends javax.swing.JFrame {
                 System.out.println("expresion: " + expresion);
             }
 
-            
             if (expresion.contains("sen(")) {
                 int signo = 1;
 
@@ -426,6 +440,9 @@ public class recursiva2 extends javax.swing.JFrame {
                     operaciones.setText("");
                     return division(izquierda, derecha);
                 }
+            //combinatoria
+            case 'c':
+                return Combinacion(izquierda, derecha);
             //modulo
             case '%':
                 return izquierda % derecha;
@@ -462,7 +479,7 @@ public class recursiva2 extends javax.swing.JFrame {
                 nivelParentesis++;
             } else if (caracter == ')') {
                 nivelParentesis--;
-            } else if (nivelParentesis == 0 && (caracter == '+' || caracter == '-' || caracter == '*' || caracter == '/' || caracter == '%' || caracter == '^' || caracter == 'd')) {
+            } else if (nivelParentesis == 0 && (caracter == '+' || caracter == '-' || caracter == '*' || caracter == 'c' || caracter == '/' || caracter == '%' || caracter == '^' || caracter == 'd')) {
                 int precedencia = obtenerPrecedencia(caracter);
 
                 if (precedencia <= precedenciaActual) {
@@ -477,7 +494,7 @@ public class recursiva2 extends javax.swing.JFrame {
 
     //   Función para obtener la precedencia de un operador
     private static int obtenerPrecedencia(char operador) {
-        if (operador == '+' || operador == '-') {
+        if (operador == '+' || operador == '-' || operador == 'c') {
             return 1;
         } else if (operador == '^') {
             return 3;
@@ -492,7 +509,7 @@ public class recursiva2 extends javax.swing.JFrame {
 
     public recursiva2() {
         initComponents();
-         setIconImage(new ImageIcon(getClass().getResource("imagenes/liarobot.png")).getImage());
+        setIconImage(new ImageIcon(getClass().getResource("imagenes/liarobot.png")).getImage());
         this.setLocationRelativeTo(null);//centrar ventana
         this.setResizable(false);
         this.setTitle("CALCULADORA RECURSIVA");
@@ -500,12 +517,12 @@ public class recursiva2 extends javax.swing.JFrame {
 
         parentesis.setVisible(false);
         error = 0;
-        
-         try {
+
+        try {
             // Carga la fuente
             InputStream fontStream = getClass().getResourceAsStream("Calculator.ttf");
             Font customFont = Font.createFont(Font.TRUETYPE_FONT, fontStream);
-           Font customFont1 = customFont.deriveFont(Font.PLAIN, 60f); // Tamaño de la fuente
+            Font customFont1 = customFont.deriveFont(Font.PLAIN, 60f); // Tamaño de la fuente
             Font customFont2 = customFont.deriveFont(Font.PLAIN, 40f); // Tamaño de la fuente
             res.setFont(customFont1);
             operaciones.setFont(customFont2);
@@ -521,8 +538,7 @@ public class recursiva2 extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        parentesis1 = new javax.swing.JButton();
         parentesis = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
@@ -561,13 +577,13 @@ public class recursiva2 extends javax.swing.JFrame {
 
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel3.setBackground(new java.awt.Color(52, 63, 95));
-        jLabel3.setOpaque(true);
-        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 200, 115, 60));
-
-        jLabel2.setBackground(new java.awt.Color(52, 63, 95));
-        jLabel2.setOpaque(true);
-        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 200, 110, 60));
+        parentesis1.setContentAreaFilled(false);
+        parentesis1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                parentesis1ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(parentesis1, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 210, 87, 50));
 
         parentesis.setContentAreaFilled(false);
         parentesis.addActionListener(new java.awt.event.ActionListener() {
@@ -575,7 +591,7 @@ public class recursiva2 extends javax.swing.JFrame {
                 parentesisActionPerformed(evt);
             }
         });
-        jPanel1.add(parentesis, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 210, 87, 50));
+        jPanel1.add(parentesis, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 210, 100, 50));
 
         jButton1.setContentAreaFilled(false);
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -586,6 +602,11 @@ public class recursiva2 extends javax.swing.JFrame {
         jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 70, 20));
 
         jButton2.setContentAreaFilled(false);
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
         jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 220, 100, 30));
 
         jButton3.setContentAreaFilled(false);
@@ -929,10 +950,11 @@ public class recursiva2 extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton17ActionPerformed
 
     private void jButton18ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton18ActionPerformed
-        if (caracternumerico(acum)==true){
+        if (caracternumerico(acum) == true) {
             validar("*pi");
-        }else{
-            validar("pi");}
+        } else {
+            validar("pi");
+        }
     }//GEN-LAST:event_jButton18ActionPerformed
 
     private void jButton19ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton19ActionPerformed
@@ -957,10 +979,7 @@ public class recursiva2 extends javax.swing.JFrame {
 
     private void jButton24ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton24ActionPerformed
         //PARA DAR RESULTADO
-        if (p == true) {//validacion de parentesis
-            aparecer(")");
-            parentesis.setVisible(false);
-        }
+
         String comprobacion = comprobar(acum);
         double resultado = evaluarExpresion(comprobacion);
         if (error == 1) {//validacion de division entre 0
@@ -1002,22 +1021,24 @@ public class recursiva2 extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton28ActionPerformed
 
     private void jButton29ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton29ActionPerformed
-        if (caracternumerico(acum)==true){
+        if (caracternumerico(acum) == true) {
             validar("*e");
-        }else{validar("e");
+        } else {
+            validar("e");
         }
     }//GEN-LAST:event_jButton29ActionPerformed
 
     private void parentesisActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_parentesisActionPerformed
-       aparecer(")");
-       jLabel3.setVisible(true);
-       parentesis.setEnabled(false);//visualizacion de parentesis para el usuario
-       if(res.getText().substring(res.getText().length() - 1).equals(")")){
-           jLabel3.setVisible(false);
-       parentesis.setEnabled(true);
-       }
-         
+        aparecer("(");
     }//GEN-LAST:event_parentesisActionPerformed
+
+    private void parentesis1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_parentesis1ActionPerformed
+        aparecer(")");
+    }//GEN-LAST:event_parentesis1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        validar3("c");
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -1082,11 +1103,10 @@ public class recursiva2 extends javax.swing.JFrame {
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton9;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel operaciones;
     private javax.swing.JButton parentesis;
+    private javax.swing.JButton parentesis1;
     private javax.swing.JLabel res;
     // End of variables declaration//GEN-END:variables
 }
