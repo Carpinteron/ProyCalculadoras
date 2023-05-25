@@ -1007,9 +1007,9 @@ public class iterativa extends javax.swing.JFrame {
 
     private void jButton29ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton29ActionPerformed
         if (caracternumerico(acum) == true) {
-            validar("*e^");
+            validar("*e");
         } else {
-            validar("e^");
+            validar("e");
         }
     }//GEN-LAST:event_jButton29ActionPerformed
 
